@@ -6,13 +6,13 @@
 /*   By: ijacquet <ijacquet@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/03/11 15:14:42 by ijacquet          #+#    #+#             */
-/*   Updated: 2020/09/17 16:10:29 by ijacquet         ###   ########.fr       */
+/*   Updated: 2020/09/25 17:49:07 by ijacquet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cub3d.h"
 
-double MV_SPD = 0.05;
+double MV_SPD = 0.01;
 
 int    create_trgb(int t, t_game *game, int i)
 {
@@ -28,6 +28,7 @@ int		move_fw(t_game *game)
 {
 	double space_Y;
 	double space_X;
+	int r;
 
 	space_Y = (game->dirY >= 0) ? 0.2 : -0.2;
 	space_X = (game->dirX >= 0) ? 0.2 : -0.2;
@@ -39,13 +40,15 @@ int		move_fw(t_game *game)
 		game->spawn_point[1] += game->dirX * MV_SPD * game->forback;
 	if (game->map[(int)(space_Y * game->forback + (game->spawn_point[0] + game->dirY * MV_SPD * game->forback))][(int)(game->spawn_point[1] + space_X)] != '1' && game->map[(int)(space_Y * game->forback + (game->spawn_point[0] + game->dirY * MV_SPD * game->forback))][(int)(game->spawn_point[1] - space_X)] != '1')
 		game->spawn_point[0] += game->dirY * MV_SPD * game->forback;
-	return (1);
+    r = ft_sprite_dist(game);
+	return (r);
 }
 
 int			move_lr(t_game *game)
 {
 	double space_Y;
 	double space_X;
+	int r;
 
 	space_Y = (game->dirY >= 0) ? 0.2 : -0.2;
 	space_X = (game->dirX >= 0) ? 0.2 : -0.2;
@@ -59,8 +62,8 @@ int			move_lr(t_game *game)
 		printf("%f\n", game->spawn_point[0]);
 		game->spawn_point[0] += game->leftright * game->dirX * MV_SPD;
 	}
-	return (1);
-	
+    r = ft_sprite_dist(game);
+	return (r);
 }
 
 int			move_turn(t_game *game)
@@ -116,6 +119,12 @@ int				key_released(int key, t_game *game)
 	return (1);
 }
 
+int		ft_endprog(t_game *game)
+{
+	(void)game;
+	exit(EXIT_SUCCESS);
+}
+
 int				ft_loop(t_game *game)
 {
 	static int		next = 1;
@@ -142,36 +151,37 @@ void	*ft_image(t_parse *parse, t_game *game)
 	
 	mlx_hook(game->window, EVENT_KEY_PRESS, 0, key_pressed, game);
 	mlx_hook(game->window, EVENT_KEY_RELEASE, 0, key_released, game);
+	mlx_hook(game->window, 17, 0L, ft_endprog, game);
 	return (game->data[5].img);
 }
 
-void ft_rebdrick(t_game *game, int i, char *path)
+int ft_rebdrick(t_game *game, int i, char *path)
 {
-    if (!(game->data[0].img = mlx_xpm_file_to_image(game->mlx, game->we_p, &(game->data[0].width), &(game->data[0].height))))
-	    printf("%p\n%d\n%d\n", game->data[0].img, (game->data[0].width), (game->data[0].height));
-    game->data[0].addr = mlx_get_data_addr(game->data[0].img, &(game->data[0].bits_per_pixel), &(game->data[0].line_length), &(game->data[0].endian));
-    if (!(game->data[1].img = mlx_xpm_file_to_image(game->mlx, game->we_p, &(game->data[1].width), &(game->data[1].height))))
-	    printf("%p\n%d\n%d\n", game->data[1].img, (game->data[1].width), (game->data[1].height));
-    game->data[1].addr = mlx_get_data_addr(game->data[1].img, &(game->data[1].bits_per_pixel), &(game->data[1].line_length), &(game->data[1].endian));
-    if (!(game->data[2].img = mlx_xpm_file_to_image(game->mlx, game->we_p, &(game->data[2].width), &(game->data[2].height))))
-	    printf("%p\n%d\n%d\n", game->data[2].img, (game->data[2].width), (game->data[2].height));
-    game->data[2].addr = mlx_get_data_addr(game->data[2].img, &(game->data[2].bits_per_pixel), &(game->data[2].line_length), &(game->data[2].endian));
-    if (!(game->data[3].img = mlx_xpm_file_to_image(game->mlx, game->we_p, &(game->data[3].width), &(game->data[3].height))))
-	    printf("%p\n%d\n%d\n", game->data[3].img, (game->data[3].width), (game->data[3].height));
-    game->data[3].addr = mlx_get_data_addr(game->data[3].img, &(game->data[3].bits_per_pixel), &(game->data[3].line_length), &(game->data[3].endian));
-    if (!(game->data[4].img = mlx_xpm_file_to_image(game->mlx, game->we_p, &(game->data[4].width), &(game->data[4].height))))
-	    printf("%p\n%d\n%d\n", game->data[4].img, (game->data[4].width), (game->data[4].height));
-    game->data[4].addr = mlx_get_data_addr(game->data[4].img, &(game->data[4].bits_per_pixel), &(game->data[4].line_length), &(game->data[4].endian));
+	int r;
+
+	r = 1;
+    if (!(game->data[i].img = mlx_xpm_file_to_image(game->mlx, path, &(game->data[i].width), &(game->data[i].height))))
+	    r = printf("%p\n%d\n%d\nabruti\n", game->data[i].img, (game->data[i].width), (game->data[i].height));
+    game->data[i].addr = mlx_get_data_addr(game->data[i].img, &(game->data[i].bits_per_pixel), &(game->data[i].line_length), &(game->data[i].endian));
+	return (r);
 }
 
 int	ft_create_window(t_parse *parse, t_game *game)
 {
+	int r;
+
 	if (!(game->mlx = mlx_init()))
 		write(2, "Error\nMLX init failure", 23);
 	game->window = mlx_new_window(game->mlx, parse->x_reso, parse->y_reso, "Nicollage");
-	printf("%s\n", game->we_p);
+	r = ft_rebdrick(game, 0, game->we_p);
+	r = ft_rebdrick(game, 1, game->ea_p);
+	r = ft_rebdrick(game, 2, game->no_p);
+	r = ft_rebdrick(game, 3, game->so_p);
+	r = ft_rebdrick(game, 4, game->sprite_text);
+    r = ft_sprite_dist(game);
 	ft_image(parse, game);
 	mlx_loop_hook(game->mlx, ft_loop, game);
+
 	mlx_loop(game->mlx);
-	exit(0);
+	return(0);
 }

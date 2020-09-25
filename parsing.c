@@ -6,7 +6,7 @@
 /*   By: ijacquet <ijacquet@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/02/20 12:51:00 by ijacquet          #+#    #+#             */
-/*   Updated: 2020/09/17 15:27:46 by ijacquet         ###   ########.fr       */
+/*   Updated: 2020/09/25 16:56:53 by ijacquet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 
 int		ft_struct_set(t_parse *parse, t_game *game)
 {
+	parse->spawn = 0;
 	parse->x_reso = 0;
 	parse->y_reso = 0;
 	parse->ceiling_blue = -1;
@@ -22,6 +23,7 @@ int		ft_struct_set(t_parse *parse, t_game *game)
 	game->forback = 0;
 	game->leftright = 0;
 	game->turn = 0;
+	parse->sprite_count = 0;
 	if (!(parse->map = malloc(sizeof(char*))))
 		exit(write(2, "Error\nFailed Malloc\n", 20));
 	return (4219);
@@ -64,6 +66,9 @@ void		ft_printdata(t_parse *parse)
 
 void	ft_parse_to_game(t_parse *parse, t_game *game)
 {
+	int i;
+
+	i = -1;
 	game->x_reso = parse->x_reso;
 	game->y_reso = parse->y_reso;
 	game->spawn_point[0] = parse->spawn_point[0];
@@ -80,6 +85,7 @@ void	ft_parse_to_game(t_parse *parse, t_game *game)
 	game->no_p = parse->no_p;
 	game->we_p = parse->we_p;
 	game->ea_p = parse->ea_p;
+	game->sprite_text = parse->sprite_text;
     if (game->spawn == 'N')
         game->dirX = 0, game->dirY = -1, game->planeX = 0.66, game->planeY = 0;
     else if (game->spawn == 'S')
@@ -88,8 +94,10 @@ void	ft_parse_to_game(t_parse *parse, t_game *game)
         game->dirX = 1, game->dirY = 0, game->planeX = 0, game->planeY = 0.66;
     else
         game->dirX = -1, game->dirY = 0, game->planeX = 0, game->planeY = -0.66;
+	game->sprite = parse->sprite;
+	game->sprite_count = parse->sprite_count;
 }
-
+// ATTENTION_PARSING_RGB_TRASH_ET_PROBLEME_NBRS_ARGUMENTS
 int			main(int argc, char **argv)
 {
 	int		fd;
@@ -107,7 +115,6 @@ int			main(int argc, char **argv)
 	line = ft_read_map(fd, &parse, line);
 	ft_parse_to_game(&parse, &game);
 //	ft_printdata(&parse);
-	printf("lol\n");
 	ft_create_window(&parse, &game);
 	return (19);
 }

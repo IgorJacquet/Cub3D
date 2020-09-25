@@ -6,7 +6,7 @@
 /*   By: ijacquet <ijacquet@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/03/11 20:07:07 by ijacquet          #+#    #+#             */
-/*   Updated: 2020/09/10 14:52:25 by ijacquet         ###   ########.fr       */
+/*   Updated: 2020/09/25 12:25:07 by ijacquet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,27 @@ static int	ft_realloc(char **str, char *new, int size, t_parse *parse)
 	if (str)
 		free(str);
 	return (4219);
+}
+
+void		ft_sprite_data(t_parse *parse)
+{
+	int x;
+	int y;
+	int i;
+
+	i = 0;
+	y = 0;
+	while (parse->map[++y])
+	{
+		x = 0;
+		while (parse->map[y][++x])
+			if (parse->map[y][x] == '2')
+			{
+				parse->sprite[i].x = x + 0.5;
+				parse->sprite[i].y = y + 0.5;
+				i++;
+			}
+	}
 }
 
 static int	ft_valid(int y, int x, t_parse *parse)
@@ -76,10 +97,15 @@ static int	ft_map_parser(t_parse *parse, int size, int x, int y)
 				parse->spawn_point[0] = y + 0.5;
 				parse->spawn_point[1] = x + 0.5;
 			}
+			if (parse->map[y][x] == '2')
+				parse->sprite_count++;
 			ft_valid(y, x++, parse);
 		}
 		x = 0;
 	}
+	if (!(parse->sprite = malloc(sizeof(t_sprite) * parse->sprite_count)))
+		return (0);
+	ft_sprite_data(parse);
 	while (parse->map[size][++x])
 		if (parse->map[size][x] != '1' && parse->map[size][x] != ' ')
 			exit(write(2, "Error\nInvalid map", 17));

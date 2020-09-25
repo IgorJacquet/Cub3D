@@ -6,7 +6,7 @@
 /*   By: ijacquet <ijacquet@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/02/19 20:02:30 by ijacquet          #+#    #+#             */
-/*   Updated: 2020/09/16 14:55:28 by ijacquet         ###   ########.fr       */
+/*   Updated: 2020/09/25 12:02:42 by ijacquet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,13 @@ typedef struct  s_data {
 	int			height;
 }               t_data;
 
+typedef struct s_sprite
+{
+	double x;
+	double y;
+	double dist;
+}				t_sprite;
+
 typedef	struct	s_parse
 {
 	int		x_reso;
@@ -53,6 +60,8 @@ typedef	struct	s_parse
 	char	**map;
 	char	spawn;
 	double		spawn_point[2];
+	t_sprite	*sprite;
+	int		sprite_count;
 }				t_parse;
 
 typedef struct s_game
@@ -97,6 +106,9 @@ typedef struct s_game
 	char	*we_p;
 	char	*ea_p;
 	char	*sprite_text;
+	t_sprite *sprite;
+	int		sprite_count;
+	int		*sp_order;
 }				t_game;
 
 int		ft_create_window(t_parse *parse, t_game *game);
@@ -117,5 +129,7 @@ int		ft_checkfile(int argc, char **argv);
 int		*ft_raycast(t_game *game, int *img_ptr);
 int		mlx_hook(void *win_ptr, int x_event, int x_mask, int (*funct)(), void *param);
 void	ft_parse_to_game(t_parse *parse, t_game *game);
+int		ft_sprite_dist(t_game *game);
+
 
 #endif

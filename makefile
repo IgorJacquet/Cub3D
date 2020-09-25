@@ -1,5 +1,5 @@
 CC	=	gcc
-CFLAGS	=	-Wall -Wextra -Werror
+CFLAGS	=	-Wall -Wextra -Werror -fsanitize=address
 NAME	=	cub3d
 LIBFT	=	libft/libft.a
 MLX	=	minilibx/libmlx.a
