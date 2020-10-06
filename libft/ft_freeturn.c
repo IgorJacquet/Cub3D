@@ -1,36 +1,23 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_memcat.c                                        :+:      :+:    :+:   */
+/*   ft_freeturn.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ijacquet <ijacquet@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2020/02/17 17:51:10 by ijacquet          #+#    #+#             */
-/*   Updated: 2020/09/30 15:22:05 by ijacquet         ###   ########.fr       */
+/*   Created: 2020/09/28 16:25:15 by ijacquet          #+#    #+#             */
+/*   Updated: 2020/09/28 17:24:28 by ijacquet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-char	*ft_memcat(char *line, char *rest, int line_size, int rest_size)
+int	ft_freeturn(char **data, int value)
 {
-	int		i;
-	char	*str;
-
-	if (!(str = (char *)malloc(sizeof(char) * (line_size + rest_size + 1))))
+	if (data)
 	{
-		free(line);
-		return (NULL);
+		free(*data);
+		*data = NULL;
 	}
-	i = -1;
-	while (++i < line_size)
-		str[i] = line[i];
-	free(line);
-	while (i < line_size + rest_size)
-	{
-		str[i] = rest[i - line_size];
-		i++;
-	}
-	str[i] = '\0';
-	return (str);
+	return (value);
 }

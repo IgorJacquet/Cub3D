@@ -6,7 +6,7 @@
 /*   By: ijacquet <ijacquet@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/02/19 20:02:30 by ijacquet          #+#    #+#             */
-/*   Updated: 2020/09/25 12:02:42 by ijacquet         ###   ########.fr       */
+/*   Updated: 2020/10/06 18:49:34 by ijacquet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@
 
 #include <stdio.h>
 
-//# define MV_SPD 0.1
+# define MV_SPD 0.05
 
 typedef struct  s_data {
     void        *img;
@@ -85,30 +85,16 @@ typedef struct s_game
 	int lineHeight;
 	int forback;
 	int leftright;
-	int x_reso;
-	int y_reso;
-	double spawn_point[2];
-	char spawn;
-	char **map;
-	int ceiling_red;
-	int ceiling_green;
-    int ceiling_blue;
-	int floor_red;
-	int floor_green;
-    int floor_blue;
 	int turn;
 	int side;
 	int stepX;
 	int stepY;
 	t_data data[6];
-	char	*no_p;
-	char	*so_p;
-	char	*we_p;
-	char	*ea_p;
 	char	*sprite_text;
-	t_sprite *sprite;
 	int		sprite_count;
 	int		*sp_order;
+	t_parse parse;
+	int		bmp;
 }				t_game;
 
 int		ft_create_window(t_parse *parse, t_game *game);
@@ -120,16 +106,26 @@ int		ft_ceiling(char **new_l, t_parse *parse, int i);
 int		ft_floor(char **new_l, t_parse *parse, int i);
 int		ft_cardinal_x(char **new_l, t_parse *parse);
 int		ft_cardinal_y(char **new_l, t_parse *parse);
-int		create_trgb(int t, t_game *game, int i);
+int		create_trgb(int t, t_parse *parse, int i);
 int		ft_resolution(t_parse *parse, char **str);
-int		ft_freeder(char **new_l, int r);
+int		ft_freeder(char **new_l, int i);
 void	ft_printdata(t_parse *parse);
 int		ft_struct_set(t_parse *parse, t_game *game);
-int		ft_checkfile(int argc, char **argv);
-int		*ft_raycast(t_game *game, int *img_ptr);
+int		ft_checkfile(int argc, char **argv, t_game *game);
+int		*ft_raycast(t_game *game, int *img_ptr, t_parse *parse);
 int		mlx_hook(void *win_ptr, int x_event, int x_mask, int (*funct)(), void *param);
 void	ft_parse_to_game(t_parse *parse, t_game *game);
-int		ft_sprite_dist(t_game *game);
+int		ft_sprite_dist(t_game *game, t_parse *parse);
+int		ft_write_return(char *str, int i);
+void	ft_free_exit(t_game *game);
+int		his_get_color(t_data *data, int x, int y);
+int		BMPwrite(t_game *game);
+int		ft_text_set(t_game *game, int i, char *path);
+int		ft_loop(t_game *game);
+
+
+
+
 
 
 #endif

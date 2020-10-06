@@ -6,7 +6,7 @@
 /*   By: ijacquet <ijacquet@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/12 12:13:14 by ijacquet          #+#    #+#             */
-/*   Updated: 2020/02/17 18:04:37 by ijacquet         ###   ########.fr       */
+/*   Updated: 2020/09/28 17:56:52 by ijacquet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ static int		ft_reader(char (*line)[BUFFER_SIZE + 1], char *buf, int fd)
 	return (1);
 }
 
-static void	line_filler(char **line, char (*rest)[BUFFER_SIZE + 1])
+static int	line_filler(char **line, char (*rest)[BUFFER_SIZE + 1])
 {
 	int	a;
 	int	rest_size;
@@ -50,7 +50,8 @@ static void	line_filler(char **line, char (*rest)[BUFFER_SIZE + 1])
 	rest_size = 0;
 	while ((*rest)[rest_size] && (*rest)[rest_size] != '\n')
 		rest_size++;
-	*line = ft_memcat(*line, *rest, ft_strlen(*line), rest_size);
+	if (!(*line = ft_memcat(*line, *rest, ft_strlen(*line), rest_size)))
+		return (0);
 	rest_size++;
 	while ((*rest)[rest_size])
 	{
@@ -63,6 +64,7 @@ static void	line_filler(char **line, char (*rest)[BUFFER_SIZE + 1])
 		(*rest)[a] = '\0';
 		a++;
 	}
+	return (1);
 }
 
 int		get_next_line(int fd, char **line)
@@ -78,13 +80,15 @@ int		get_next_line(int fd, char **line)
 	**line = '\0';
 	while (!endl_checker(rest[fd]))
 	{
-		line_filler(line, &rest[fd]);
+		if (!line_filler(line, &rest[fd]))
+			return (-1);
 		r = ft_reader(&rest[fd], buf, fd);
 		if (r < 0)
-			return (-1);
+			return(ft_freeturn(line, -1));
 		else if (r == 0)
 			return (r);
 	}
-	line_filler(line, &rest[fd]);
+	if (!line_filler(line, &rest[fd]))
+		return (-1);
 	return (1);
 }
