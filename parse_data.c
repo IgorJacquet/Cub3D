@@ -6,7 +6,7 @@
 /*   By: ijacquet <ijacquet@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/03/11 20:08:56 by ijacquet          #+#    #+#             */
-/*   Updated: 2020/10/01 12:19:42 by ijacquet         ###   ########.fr       */
+/*   Updated: 2020/10/07 16:08:27 by ijacquet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ int	ft_resolution(t_parse *parse, char **str)
 
 	i = 0;
 	if (str[3] || !str[1] || !str[2])
-		return (ft_write_return("Error\nwrong number of res arguments\n", 0));
+		return (ft_write_return("Error\nWrong number of res arguments\n", 0));
 	if (ft_atoi(str[1]) < 0 || ft_atoi(str[2]) < 0)
 		return (ft_write_return("Error\nWrong resolution\n", 0));
 	parse->x_reso = ft_atoi(str[1]);
@@ -48,17 +48,18 @@ int	ft_cardinal_y(char **new_l, t_parse *parse)
 		if (parse->check[0] == '1')
 			return (ft_write_return("Error\nDouble North texture\n", 0));
 		if (new_l[2] || !new_l[1])
-			return (ft_write_return("Error\nWrong number of north arguments\n", 0));
+			return (ft_write_return("Error\nWrong number of north args\n", 0));
 		if (!(parse->no_p = ft_strdup(new_l[1])))
 			return (ft_write_return("Error\nFailed Malloc\n", 0));
 		parse->check[0] = '1';
 	}
-	else if (new_l[0] && new_l[0][0] == 'S' && new_l[0][1] == 'O' && !new_l[0][2])
+	else if (new_l[0] && new_l[0][0] == 'S' && new_l[0][1] == 'O' &&
+			!new_l[0][2])
 	{
 		if (parse->check[1] == '1')
 			return (ft_write_return("Error\nDouble South texture\n", 0));
 		if (new_l[2] || !new_l[1])
-			return (ft_write_return("Error\nWrong number of south arguments\n", 0));
+			return (ft_write_return("Error\nWrong number of south args\n", 0));
 		if (!(parse->so_p = ft_strdup(new_l[1])))
 			return (ft_write_return("Error\nFailed Malloc\n", 0));
 		parse->check[1] = '1';
@@ -75,7 +76,7 @@ int	ft_cardinal_x(char **new_l, t_parse *parse)
 		if (parse->check[2] == '1')
 			return (ft_write_return("Error\nDouble East texture\n", 0));
 		if (new_l[2] || !new_l[1])
-			return (ft_write_return("Error\nWrong number of east arguments", 0));
+			return (ft_write_return("Error\nWrong number of east args", 0));
 		if (!(parse->ea_p = ft_strdup(new_l[1])))
 			return (ft_write_return("Error\nFailed Malloc", 0));
 		parse->check[2] = '1';
@@ -86,7 +87,7 @@ int	ft_cardinal_x(char **new_l, t_parse *parse)
 		if (parse->check[3] == '1')
 			return (ft_write_return("Error\nDouble West texture", 0));
 		if (new_l[2] || !new_l[1])
-			return (ft_write_return("Error\nWrong number of west arguments", 0));
+			return (ft_write_return("Error\nWrong number of west args", 0));
 		if (!(parse->we_p = ft_strdup(new_l[1])))
 			return (ft_write_return("Error\nFailed Malloc", 0));
 		parse->check[3] = '1';
@@ -103,7 +104,7 @@ int	ft_floor(char **new_l, t_parse *parse, int i)
 		if (parse->check[5] == '1')
 			return (ft_write_return("Error\nDouble floor color", 0));
 		if (!new_l[1])
-			return (ft_write_return("Error\nWrong number of floor arguments", 0));
+			return (ft_write_return("Error\nWrong number of floor args", 0));
 		parse->floor_red = ft_atoi(new_l[1]);
 		while (new_l[1][++i] != ',')
 			if (!new_l[1][i] || (new_l[1][i] < '0' || new_l[1][i] > '9'))
@@ -130,7 +131,7 @@ int	ft_ceiling(char **new_l, t_parse *parse, int i)
 		if (parse->check[6] == '1')
 			return (ft_write_return("Error\nDouble ceiling color", 0));
 		if (!new_l[1])
-			return (ft_write_return("Error\nWrong number of ceiling arguments", 0));
+			return (ft_write_return("Error\nWrong number of ceiling args", 0));
 		parse->ceiling_red = ft_atoi(new_l[1]);
 		while (new_l[1][++i] != ',')
 			if (!new_l[1][i] || (new_l[1][i] < '0' && new_l[1][i] > '9'))

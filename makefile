@@ -1,6 +1,6 @@
 CC	=	gcc
 CFLAGS	=	-Wall -Wextra -Werror -fsanitize=address
-NAME	=	cub3d
+NAME	=	Cub3D
 LIBFT	=	libft/libft.a
 MLX	=	minilibx/libmlx.a
 MLX_FLGS =	-L minilibx -I minilibx -lmlx -framework OpenGL -framework AppKit

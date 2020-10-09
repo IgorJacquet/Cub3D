@@ -1,29 +1,18 @@
 R 1120 960
 
-NO ./img/redbrick.xpm
-SO ./img/bluestone.xpm
-EA ./img/colorstone.xpm
-WE ./img/greystone.xpm
+NO ./img/barrel.xpm
+SO ./img/barrel.xpm
+EA ./img/barrel.xpm
+WE ./img/barrel.xpm
 
-S ./img/ghost.xpm
+S ./img/barrel.xpm
 F 100,100,100
-C 255,0,0
-
-
-
-
-
-
+C 100,200,30
 
 111111111111111
-121011111110021
-10101     10001
-101011111112001
-100000000E00001
+101001S00010001
+101000210000001
+101000100000001
+100000000000001
+100000000010001
 111111111111111
- 
- 
-  
- 
- 
-1

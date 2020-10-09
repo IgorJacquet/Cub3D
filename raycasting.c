@@ -6,247 +6,248 @@
 /*   By: ijacquet <ijacquet@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/09/11 13:21:00 by ijacquet          #+#    #+#             */
-/*   Updated: 2020/10/06 16:42:31 by ijacquet         ###   ########.fr       */
+/*   Updated: 2020/10/09 19:12:40 by ijacquet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cub3d.h"
 
-static void    ft_set_raydir(t_game *game, int x, t_parse *parse)
+static void		ft_set_raydir(t_game *game, int x, t_parse *parse)
 {
-    game->cameraX = 2 * x / (double)parse->x_reso - 1;
-    game->rayDirX = game->dirX + game->planeX * game->cameraX;
-    game->rayDirY = game->dirY + game->planeY * game->cameraX;
-    game->mapX = (int)parse->spawn_point[1];
-    game->mapY = (int)parse->spawn_point[0];
-    game->deltaDistX = fabs(1 / game->rayDirX);
-    game->deltaDistY = fabs(1 / game->rayDirY);
+	game->cameraX = 2 * x / (double)parse->x_reso - 1;
+	game->rayDirX = game->dirX + game->planeX * game->cameraX;
+	game->rayDirY = game->dirY + game->planeY * game->cameraX;
+	game->mapX = (int)parse->spawn_point[1];
+	game->mapY = (int)parse->spawn_point[0];
+	game->deltaDistX = fabs(1 / game->rayDirX);
+	game->deltaDistY = fabs(1 / game->rayDirY);
 }
 
-void            his_mlx_pixel_put(t_data *data, int x, int y, int color)
+int				his_get_color(t_data *data, int x, int y)
 {
-    char    *dst;
+	char	*dst;
 
-    dst = data->addr + (y * data->line_length + x * (data->bits_per_pixel / 8));
-    *(unsigned int*)dst = color;
+	dst = data->addr + (y * data->line_length + x * (data->bits_per_pixel / 8));
+	return (*(unsigned int*)dst);
 }
 
-int            his_get_color(t_data *data, int x, int y)
+static void	ft_distance(t_game *game, t_parse *parse)
 {
-    char    *dst;
-
-    dst = data->addr + (y * data->line_length + x * (data->bits_per_pixel / 8));
-    return (*(unsigned int*)dst);
+	if (game->rayDirX < 0)
+	{
+		game->stepX = -1;
+		game->sideDistX = (parse->spawn_point[1] - game->mapX) *
+							game->deltaDistX;
+	}
+	else
+	{
+		game->stepX = 1;
+		game->sideDistX = (game->mapX + 1.0 - parse->spawn_point[1]) *
+							game->deltaDistX;
+	}
+	if (game->rayDirY < 0)
+	{
+		game->stepY = -1;
+		game->sideDistY = (parse->spawn_point[0] - game->mapY) *
+							game->deltaDistY;
+	}
+	else
+	{
+		game->stepY = 1;
+		game->sideDistY = (game->mapY + 1.0 - parse->spawn_point[0]) *
+							game->deltaDistY;
+	}
 }
 
-static void    ft_distance(t_game *game, t_parse *parse)
+static int		ft_dda(t_game *game, t_parse *parse)
 {
-    if(game->rayDirX < 0)
-    {
-        game->stepX = -1;
-        game->sideDistX = (parse->spawn_point[1] - game->mapX) * game->deltaDistX;
-    }
-    else
-    {
-        game->stepX = 1;
-        game->sideDistX = (game->mapX + 1.0 - parse->spawn_point[1]) * game->deltaDistX;
-    }
-    if(game->rayDirY < 0)
-    {
-        game->stepY = -1;
-        game->sideDistY = (parse->spawn_point[0] - game->mapY) * game->deltaDistY;
-    }
-    else
-    {
-        game->stepY = 1;
-        game->sideDistY = (game->mapY + 1.0 - parse->spawn_point[0]) * game->deltaDistY;
-    }
+	int hit;
+
+	hit = 0;
+	while (hit == 0)
+	{
+		if (game->sideDistX < game->sideDistY)
+		{
+			game->sideDistX += game->deltaDistX;
+			game->mapX += game->stepX;
+			game->side = 0;
+		}
+		else
+		{
+			game->sideDistY += game->deltaDistY;
+			game->mapY += game->stepY;
+			game->side = 1;
+		}
+		if (parse->map[game->mapY][game->mapX] == '1')
+			hit = 1;
+	}
+	return (hit);
 }
 
-static int     ft_dda(t_game *game, t_parse *parse)
+int				ft_sprite_dist(t_game *game, t_parse *parse)
 {
-    int hit;
-    
-    hit = 0;
-    while (hit == 0)
-    {
-        if(game->sideDistX < game->sideDistY)
-        {
-            game->sideDistX += game->deltaDistX;
-            game->mapX += game->stepX;
-            game->side = 0;
-        }
-        else
-        {
-            game->sideDistY += game->deltaDistY;
-            game->mapY += game->stepY;
-            game->side = 1;
-        }
-        if(parse->map[game->mapY][game->mapX] == '1')
-            hit = 1;
-    }
-    return (hit);
+	int i;
+	int temp;
+
+	i = -1;
+	while (++i < parse->sprite_count)
+	{
+		game->sp_order[i] = i;
+		parse->sprite[i].dist = ((parse->spawn_point[1] - parse->sprite[i].x) *
+		(parse->spawn_point[1] - parse->sprite[i].x) + (parse->spawn_point[0] -
+		parse->sprite[i].y) * (parse->spawn_point[0] - parse->sprite[i].y));
+	}
+	i = -1;
+	while (++i < parse->sprite_count - 1)
+	{
+		if (parse->sprite[game->sp_order[i]].dist <
+			parse->sprite[game->sp_order[i + 1]].dist)
+		{
+			temp = game->sp_order[i];
+			game->sp_order[i] = game->sp_order[i + 1];
+			game->sp_order[i + 1] = temp;
+			i = -1;
+		}
+	}
+	return (1);
 }
 
-int        ft_sprite_dist(t_game *game, t_parse *parse)
+void			ft_set_sp(t_sp_data *sp, t_parse *parse, int i, t_game *game)
 {
-    int i;
-    int temp;
-
-    i = -1;
-    while (++i < parse->sprite_count)
-    {
-        game->sp_order[i] = i;
-        parse->sprite[i].dist = ((parse->spawn_point[1] - parse->sprite[i].x) * (parse->spawn_point[1] - parse->sprite[i].x) + (parse->spawn_point[0] - parse->sprite[i].y) * (parse->spawn_point[0] - parse->sprite[i].y));
-    }
-    i = -1;
-    while (++i < parse->sprite_count - 1)
-    {       
-        if (parse->sprite[game->sp_order[i]].dist < parse->sprite[game->sp_order[i + 1]].dist)
-        {
-            temp = game->sp_order[i];
-            game->sp_order[i] = game->sp_order[i + 1];
-            game->sp_order[i + 1] = temp;
-            i = -1;
-        }
-    }
-    return (1);
+	sp->spriteX = parse->sprite[game->sp_order[i]].x - parse->spawn_point[1];
+	sp->spriteY = parse->sprite[game->sp_order[i]].y - parse->spawn_point[0];
+	sp->invDet = 1.0 / (game->planeX * game->dirY - game->dirX * game->planeY);
+	sp->transformX = sp->invDet * (game->dirY * sp->spriteX -
+						game->dirX * sp->spriteY);
+	sp->transformY = sp->invDet * (-game->planeY * sp->spriteX +
+						game->planeX * sp->spriteY);
+	sp->spriteScreenX = (int)((parse->x_reso / 2) * (1 +
+						sp->transformX / sp->transformY));
+	sp->spriteHeight = abs((int)(parse->y_reso / (sp->transformY)));
+	sp->drawStartY = -sp->spriteHeight / 2 + parse->y_reso / 2;
+	if (sp->drawStartY < 0)
+		sp->drawStartY = 0;
+	sp->drawEndY = sp->spriteHeight / 2 + parse->y_reso / 2;
+	if (sp->drawEndY >= parse->y_reso)
+		sp->drawEndY = parse->y_reso;
+	sp->spriteWidth = abs((int)(parse->y_reso / (sp->transformY)));
+	sp->drawStartX = -sp->spriteWidth / 2 + sp->spriteScreenX;
+	if (sp->drawStartX < 0)
+		sp->drawStartX = 0;
+	sp->drawEndX = sp->spriteWidth / 2 + sp->spriteScreenX;
+	if (sp->drawEndX >= parse->x_reso)
+		sp->drawEndX = parse->x_reso;
 }
 
-int     ft_sprite_draw(t_game *game, t_parse *parse, double zbuffer[parse->x_reso], int *img_ptr)
+void			ft_sprite_draw(t_game *game, t_parse *parse, double zbuffer[parse->x_reso], int *img_ptr)
 {
-    for(int i = 0; i < parse->sprite_count; i++)
-    {
-        //translate sprite position to relative to camera
-        double spriteX = parse->sprite[game->sp_order[i]].x - parse->spawn_point[1];
-        double spriteY = parse->sprite[game->sp_order[i]].y - parse->spawn_point[0];
-        double invDet = 1.0 / (game->planeX * game->dirY - game->dirX * game->planeY); //required for correct matrix multiplication
+	int	i;
+	int	j;
 
-        double transformX = invDet * (game->dirY * spriteX - game->dirX * spriteY);
-        double transformY = invDet * (-game->planeY * spriteX + game->planeX * spriteY); //this is actually the depth inside the screen, that what Z is in 3D
+	i = -1;
 
-        int spriteScreenX = (int)((parse->x_reso / 2) * (1 + transformX / transformY));
-
-        //calculate height of the sprite on screen
-        int spriteHeight = abs((int)(parse->y_reso / (transformY))); //using 'transformY' instead of the real distance prevents fisheye
-        //calculate lowest and highest pixel to fill in current stripe
-        int drawStartY = -spriteHeight / 2 + parse->y_reso / 2;
-        if(drawStartY < 0) drawStartY = 0;
-        int drawEndY = spriteHeight / 2 + parse->y_reso / 2;
-        if(drawEndY >= parse->y_reso) drawEndY = parse->y_reso;
-
-        //calculate width of the sprite
-        int spriteWidth = abs((int)(parse->y_reso / (transformY)));
-        int drawStartX = -spriteWidth / 2 + spriteScreenX;
-        if(drawStartX < 0) drawStartX = 0;
-        int drawEndX = spriteWidth / 2 + spriteScreenX;
-        if(drawEndX >= parse->x_reso) drawEndX = parse->x_reso;
-
-        //loop through every vertical stripe of the sprite on screen
-        for(int stripe = drawStartX; stripe < drawEndX; stripe++)
-        {
-            int texX = (int)(256 * (stripe - (-spriteWidth / 2 + spriteScreenX)) * game->data[4].width / spriteWidth) / 256;
-            //the conditions in the if are:
-            //1) it's in front of camera plane so you don't see things behind you
-            //2) it's on the screen (left)
-            //3) it's on the screen (right)
-            //4) ZBuffer, with perpendicular distance
-            if(transformY > 0 && stripe >= 0 && stripe < parse->x_reso && transformY < zbuffer[stripe])
-                for(int y = drawStartY; y < drawEndY; y++) //for every pixel of the current stripe
-                {
-                    int d = (y) * 256 - parse->y_reso * 128 + spriteHeight * 128; //256 and 128 factors to avoid floats
-                    int texY = ((d * game->data[4].height) / spriteHeight) / 256;
-                    if (texX < 0)
-                        texX = 0;
-                    if (texY < 0)
-                        texY = 0;
-                    if((his_get_color(&game->data[4], texX, texY) & 0x00FFFFFF) != 0)
-                        img_ptr[stripe + y * parse->x_reso] = his_get_color(&game->data[4], texX, texY);
-                }
-        }
-    }
-    return (1);
+	while (++i < parse->sprite_count)
+	{
+		ft_set_sp(&game->sp, &game->parse, i, game);
+		for(int stripe = game->sp.drawStartX; stripe < game->sp.drawEndX; stripe++)
+		{
+			game->sp.texX = (int)(256 * (stripe - (-game->sp.spriteWidth / 2 + game->sp.spriteScreenX)) * game->data[4].width / game->sp.spriteWidth) / 256;
+			if(game->sp.transformY > 0 && stripe >= 0 && stripe < parse->x_reso && game->sp.transformY < zbuffer[stripe])
+				for(int y = game->sp.drawStartY; y < game->sp.drawEndY; y++)
+				{
+					int d = (y) * 256 - parse->y_reso * 128 + game->sp.spriteHeight * 128;
+					game->sp.texY = ((d * game->data[4].height) / game->sp.spriteHeight) / 256;
+					if (game->sp.texX < 0)
+						game->sp.texX = 0;
+					if (game->sp.texY < 0)
+						game->sp.texY = 0;
+					if((his_get_color(&game->data[4], game->sp.texX, game->sp.texY) & 0x00FFFFFF) != 0)
+						img_ptr[stripe + y * parse->x_reso] = his_get_color(&game->data[4], game->sp.texX, game->sp.texY);
+				}
+		}
+	}
 }
 
-static void    ft_draw_screen(t_game *game, int *img_ptr, int x, t_parse *parse)
+static void		ft_draw_screen(t_game *game, int *img_ptr, int x, t_parse *parse)
 {
-    int drawStart;
-    int i;
-    
-    i = 0;
-    drawStart = -game->lineHeight / 2 + parse->y_reso / 2;
-    if(drawStart < 0)
-        drawStart = 0;
-    int drawEnd = game->lineHeight / 2 + parse->y_reso / 2;
-    if(drawEnd >= parse->y_reso)
-        drawEnd = parse->y_reso;
-    double wallX;
-    if (game->side == 0) wallX = parse->spawn_point[0] + game->perpWallDist * game->rayDirY;
-    else           wallX = parse->spawn_point[1] + game->perpWallDist * game->rayDirX;
-    wallX -= floor((wallX));
-    int texX = (int)(wallX * (double)(game->data[0].width));
-    if(game->side == 0 && game->rayDirX > 0) 
-        texX = game->data[0].width - texX - 1;
-    if(game->side == 1 && game->rayDirY < 0) 
-        texX = game->data[0].width - texX - 1;
-    double step = 1.0 * game->data[0].height / game->lineHeight;
-    double texPos = (drawStart - parse->y_reso / 2 + game->lineHeight / 2) * step;
-    while (i < drawStart)
-        img_ptr[x + (i++ * parse->x_reso)] = create_trgb(0, parse, 0);
-    if (game->side == 0 && game->rayDirX >= 0) // mur W
-    {
-        while (i < drawEnd)
-        {
-            int texY = (int)texPos & (game->data[0].height - 1);
-            texPos += step;
-            img_ptr[x + i++ * parse->x_reso] = his_get_color(&game->data[0], texX, texY);
-        }
-    }
-    else if (game->side == 0 && game->rayDirX < 0) //mur E
-        while (i < drawEnd)
-        {
-            int texY = (int)texPos & (game->data[1].height - 1);
-            texPos += step;
-            img_ptr[x + i++ * parse->x_reso] = his_get_color(&game->data[1], texX, texY);
-        }
-    else if (game->side && game->rayDirY >= 0) //mur N
-        while (i < drawEnd)
-        {
-            int texY = (int)texPos & (game->data[2].height - 1);
-            texPos += step;
-            img_ptr[x + i++ * parse->x_reso] = his_get_color(&game->data[2], texX, texY);
-        }
-    else if (game->side && game->rayDirY < 0) //mur S
-        while (i < drawEnd)
-        {
-            int texY = (int)texPos & (game->data[3].height - 1);
-            texPos += step;
-            img_ptr[x + i++ * parse->x_reso] = his_get_color(&game->data[3], texX, texY);
-        }    i = -1; 
-    while (++i < parse->y_reso - drawEnd)
-        img_ptr[x + (drawEnd + i) * parse->x_reso] = create_trgb(0, parse, 1);
+	int drawStart;
+	int i;
+
+	i = 0;
+	drawStart = -game->lineHeight / 2 + parse->y_reso / 2;
+	if(drawStart < 0)
+		drawStart = 0;
+	int drawEnd = game->lineHeight / 2 + parse->y_reso / 2;
+	if(drawEnd >= parse->y_reso)
+		drawEnd = parse->y_reso;
+	double wallX;
+	if (game->side == 0) wallX = parse->spawn_point[0] + game->perpWallDist * game->rayDirY;
+	else           wallX = parse->spawn_point[1] + game->perpWallDist * game->rayDirX;
+	wallX -= floor((wallX));
+	int texX = (int)(wallX * (double)(game->data[0].width));
+	if(game->side == 0 && game->rayDirX < 0) 
+		texX = game->data[0].width - texX - 1;
+	if(game->side == 1 && game->rayDirY > 0) 
+		texX = game->data[0].width - texX - 1;
+	double step = 1.0 * game->data[0].height / game->lineHeight;
+	double texPos = (drawStart - parse->y_reso / 2 + game->lineHeight / 2) * step;
+	while (i < drawStart)
+		img_ptr[x + (i++ * parse->x_reso)] = create_trgb(0, parse, 0);
+	if (game->side == 0 && game->rayDirX >= 0)
+	{
+		while (i < drawEnd)
+		{
+			int texY = (int)texPos & (game->data[0].height - 1);
+			texPos += step;
+			img_ptr[x + i++ * parse->x_reso] = his_get_color(&game->data[0], texX, texY);
+		}
+	}
+	else if (game->side == 0 && game->rayDirX < 0) //mur E
+		while (i < drawEnd)
+		{	
+			int texY = (int)texPos & (game->data[1].height - 1);
+			texPos += step;
+			img_ptr[x + i++ * parse->x_reso] = his_get_color(&game->data[1], texX, texY);
+		}
+	else if (game->side && game->rayDirY >= 0) //mur N
+		while (i < drawEnd)
+		{
+			int texY = (int)texPos & (game->data[2].height - 1);
+			texPos += step;
+			img_ptr[x + i++ * parse->x_reso] = his_get_color(&game->data[2], texX, texY);
+		}
+	else if (game->side && game->rayDirY < 0) //mur S
+		while (i < drawEnd)
+		{
+			int texY = (int)texPos & (game->data[3].height - 1);
+			texPos += step;
+			img_ptr[x + i++ * parse->x_reso] = his_get_color(&game->data[3], texX, texY);
+		}
+	i = -1; 
+	while (++i < parse->y_reso - drawEnd)
+		img_ptr[x + (drawEnd + i) * parse->x_reso] = create_trgb(0, parse, 1);
 }
 
-int   *ft_raycast(t_game *game, int *img_ptr, t_parse *parse)
+int				*ft_raycast(t_game *game, int *img_ptr, t_parse *parse)
 {
-    int hit;
-    int x;
-    double  zbuffer[parse->x_reso];
+	int hit;
+	int x;
+	double  zbuffer[parse->x_reso];
 
-    x = -1;
-    while(++x < parse->x_reso)
-    {
-        ft_set_raydir(game, x, parse);
-        ft_distance(game, parse);
-        hit = ft_dda(game, parse);
-        if(game->side == 0) 
-            game->perpWallDist = (game->mapX - parse->spawn_point[1] + (1 - game->stepX) / 2) / game->rayDirX;
-        else
-            game->perpWallDist = (game->mapY - parse->spawn_point[0] + (1 - game->stepY) / 2) / game->rayDirY;    
-        game->lineHeight = (int)(parse->y_reso / game->perpWallDist);
-        ft_draw_screen(game, img_ptr, x, parse);
-        zbuffer[x] = game->perpWallDist;
-    }
-    ft_sprite_draw(game, parse, zbuffer, img_ptr);
-    return (img_ptr);
+	x = -1;
+	while(++x < parse->x_reso)
+	{
+		ft_set_raydir(game, x, parse);
+		ft_distance(game, parse);
+		hit = ft_dda(game, parse);
+		if(game->side == 0) 
+			game->perpWallDist = (game->mapX - parse->spawn_point[1] + (1 - game->stepX) / 2) / game->rayDirX;
+		else
+			game->perpWallDist = (game->mapY - parse->spawn_point[0] + (1 - game->stepY) / 2) / game->rayDirY;    
+		game->lineHeight = (int)(parse->y_reso / game->perpWallDist);
+		ft_draw_screen(game, img_ptr, x, parse);
+		zbuffer[x] = game->perpWallDist;
+	}
+	ft_sprite_draw(game, parse, zbuffer, img_ptr);
+	return (img_ptr);
 }

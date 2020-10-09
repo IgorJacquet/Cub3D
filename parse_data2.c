@@ -6,7 +6,7 @@
 /*   By: ijacquet <ijacquet@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/03/11 20:12:03 by ijacquet          #+#    #+#             */
-/*   Updated: 2020/10/05 17:51:43 by ijacquet         ###   ########.fr       */
+/*   Updated: 2020/10/08 14:54:49 by ijacquet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ int		ft_resol_sprite(char **new_l, t_parse *parse)
 		if (!(parse->sprite_text = ft_strdup(new_l[1])))
 			return (ft_write_return("Error\nFailed Malloc", 0));
 		if (new_l[2] || !new_l[1])
-			return (ft_write_return("Error\nWrong number of sprite arguments", 0));
+			return (ft_write_return("Error\nWrong number of sprite args", 0));
 		parse->check[4] = '1';
 	}
 	else if (new_l[0] && new_l[0][0] == 'R' && !new_l[0][1])
@@ -36,6 +36,8 @@ int		ft_resol_sprite(char **new_l, t_parse *parse)
 			return (ft_write_return("Error\nDouble resolution\n", 1));
 		return (ft_resolution(parse, new_l));
 	}
+	else if (new_l[0])
+		return (-1);
 	else
 		return (0);
 	return (4219);
@@ -75,23 +77,25 @@ char	*ft_read_data(int fd, t_parse *parse, char *line)
 	int		r;
 	char	**new_l;
 
-	while ((r = get_next_line(fd, &line)) > 0 && (ft_strlen(parse->check) < 8))
+	while ((r = get_next_line(fd, &line)) > 0)
 	{
-		r = 0;
 		if (!(new_l = ft_split(line, ' ')))
 			exit(write(2, "Error\nFailed malloc\n", 20));
-		free(line);
 		if (new_l[0] && ft_parser(new_l, parse) != 4219)
 		{
 			ft_freeder(new_l, 0);
-			return (NULL);
+			return (ft_str_return("Error\nInvalid data\n"));
 		}
 		ft_freeder(new_l, 4219);
+		if (ft_strlen(parse->check) == 8)
+			break ;
+		free(line);
+		r = 0;
 	}
 	if (r == 0)
 	{
 		ft_write_return("Error\nmissing data", 0);
-		return(NULL);
+		return (NULL);
 	}
 	return (line);
 }

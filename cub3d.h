@@ -6,7 +6,7 @@
 /*   By: ijacquet <ijacquet@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/02/19 20:02:30 by ijacquet          #+#    #+#             */
-/*   Updated: 2020/10/06 18:49:34 by ijacquet         ###   ########.fr       */
+/*   Updated: 2020/10/09 17:22:56 by ijacquet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,11 +19,12 @@
 # include "minilibx/mlx.h"
 # include "keys.h"
 
-#include <stdio.h>
+# include <stdio.h>
 
 # define MV_SPD 0.05
 
-typedef struct  s_data {
+typedef struct  s_data 
+{
     void        *img;
     char        *addr;
     int         bits_per_pixel;
@@ -39,6 +40,24 @@ typedef struct s_sprite
 	double y;
 	double dist;
 }				t_sprite;
+
+typedef struct s_spr_data
+{
+	double spriteX;
+	double spriteY;
+	double invDet;
+	double transformX;
+	double transformY;
+	int spriteScreenX;
+	int spriteHeight;
+	int drawStartY;
+	int drawEndY;
+	int spriteWidth;
+	int drawStartX;
+	int drawEndX;
+	int texX;
+	int texY;
+}				t_sp_data;
 
 typedef	struct	s_parse
 {
@@ -95,10 +114,12 @@ typedef struct s_game
 	int		*sp_order;
 	t_parse parse;
 	int		bmp;
+	t_sp_data sp;
+
 }				t_game;
 
 int		ft_create_window(t_parse *parse, t_game *game);
-char	*ft_read_map(int fd, t_parse *parse, char *line);
+char	*ft_read_map(int fd, t_parse *parse, char *line, int count);
 char	*ft_read_data(int fd, t_parse *parse, char *line);
 int		ft_parser(char **new_l, t_parse *parse);
 int		ft_resol_sprite(char **new_l, t_parse *parse);
@@ -108,7 +129,7 @@ int		ft_cardinal_x(char **new_l, t_parse *parse);
 int		ft_cardinal_y(char **new_l, t_parse *parse);
 int		create_trgb(int t, t_parse *parse, int i);
 int		ft_resolution(t_parse *parse, char **str);
-int		ft_freeder(char **new_l, int i);
+void	ft_freeder(char **new_l, int i);
 void	ft_printdata(t_parse *parse);
 int		ft_struct_set(t_parse *parse, t_game *game);
 int		ft_checkfile(int argc, char **argv, t_game *game);
@@ -119,9 +140,10 @@ int		ft_sprite_dist(t_game *game, t_parse *parse);
 int		ft_write_return(char *str, int i);
 void	ft_free_exit(t_game *game);
 int		his_get_color(t_data *data, int x, int y);
-int		BMPwrite(t_game *game);
+int		bmp_write(t_game *game);
 int		ft_text_set(t_game *game, int i, char *path);
 int		ft_loop(t_game *game);
+char	*ft_str_return(char *str);
 
 
 

@@ -6,7 +6,7 @@
 /*   By: ijacquet <ijacquet@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/02/20 12:51:00 by ijacquet          #+#    #+#             */
-/*   Updated: 2020/10/06 18:43:01 by ijacquet         ###   ########.fr       */
+/*   Updated: 2020/10/09 17:33:53 by ijacquet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,48 +17,24 @@ void	ft_free_exit(t_game *game)
 	int i;
 
 	i = -1;
-	if (game->mlx)
+	if (game->window)
 		mlx_destroy_window(game->mlx, game->window);
 	if (game->parse.map)
-	{
-		printf("free map\n");
 		ft_freeder(game->parse.map, 0);
-	}
 	if (game->parse.sprite)
-	{
-		printf("free sprite\n");
 		free(game->parse.sprite);
-	}
 	if (game->sp_order)
-	{
-		printf("free sp_order\n");
 		free(game->sp_order);
-	}
 	if (game->parse.no_p)
-	{
-		printf("free no_p\n");
-		free (game->parse.no_p);
-	}
+		free(game->parse.no_p);
 	if (game->parse.so_p)
-	{
-		printf("free so_p\n");
-		free (game->parse.so_p);
-	}
+		free(game->parse.so_p);
 	if (game->parse.we_p)
-	{
-		printf("free we_p\n");
-		free (game->parse.we_p);
-	}
+		free(game->parse.we_p);
 	if (game->parse.ea_p)
-	{
-		printf("free ea_p\n");
-		free (game->parse.ea_p);
-	}
+		free(game->parse.ea_p);
 	if (game->parse.sprite_text)
-	{
-		printf("free sprite_text\n");
-		free (game->parse.sprite_text);
-	}
+		free(game->parse.sprite_text);
 	exit(EXIT_SUCCESS);
 }
 
@@ -74,16 +50,23 @@ int		ft_struct_set(t_parse *parse, t_game *game)
 	game->leftright = 0;
 	game->turn = 0;
 	parse->sprite_count = 0;
-	if (!(parse->map = malloc(sizeof(char*))))
-		return (ft_write_return("Error\nFailed Malloc", 0));
+	parse->map = NULL;
+	parse->sprite = 0;
+	game->sp_order = 0;
+	parse->no_p = 0;
+	parse->so_p = 0;
+	parse->we_p = 0;
+	parse->ea_p = 0;
+	parse->sprite_text = 0;
 	return (4219);
 }
 
-int			ft_freeder(char **new_l, int i)
+void	ft_freeder(char **new_l, int i)
 {
 	int r;
 
 	r = 0;
+	i += i;
 	if (new_l)
 	{
 		while (new_l[r])
@@ -92,9 +75,7 @@ int			ft_freeder(char **new_l, int i)
 			new_l[r++] = NULL;
 		}
 		free(new_l);
-		new_l = NULL;
 	}
-	return (i);
 }
 
 int		ft_checkfile(int argc, char **argv, t_game *game)
@@ -104,7 +85,8 @@ int		ft_checkfile(int argc, char **argv, t_game *game)
 	game->bmp = 0;
 	if (argc != 2 && argc != 3)
 		return (ft_write_return("Error\nWrong number of arguments\n", 0));
-	str = ft_strrchr(argv[1], '.');
+	if (!(str = ft_strrchr(argv[1], '.')))
+		return (ft_write_return("Error\nWrong file name\n", 0));
 	if (argv[1][0] == '.' && argv[1][1] == 'c' && argv[1][2] == 'u' &&
 										argv[1][3] == 'b' && !argv[1][4])
 		return (ft_write_return("Error\nWrong file name\n", 0));
@@ -113,14 +95,15 @@ int		ft_checkfile(int argc, char **argv, t_game *game)
 	if (argc == 3)
 	{
 		if (argv[2][0] != '-' || argv[2][1] != '-' || argv[2][2] != 's' ||
-		argv[2][3] != 'a' || argv[2][4] != 'v' || argv[2][5] != 'e' || argv[2][6])
+		argv[2][3] != 'a' || argv[2][4] != 'v'
+		|| argv[2][5] != 'e' || argv[2][6])
 			return (ft_write_return("Error\nWrong arguments\n", 0));
 		game->bmp = 1;
 	}
 	return (4219);
 }
 
-void		ft_printdata(t_parse *parse)
+void	ft_printdata(t_parse *parse)
 {
 	int	y;
 	int	x;
@@ -135,7 +118,7 @@ void		ft_printdata(t_parse *parse)
 
 void	ft_pos_init(t_parse *parse, t_game *game)
 {
-    game->dirX = 0;
+	game->dirX = 0;
 	game->dirY = 0;
 	game->planeX = 0;
 	game->planeY = 0;
@@ -150,18 +133,18 @@ void	ft_pos_init(t_parse *parse, t_game *game)
 		game->planeX = -0.66;
 	}
 	else if (parse->spawn == 'E')
-    {
+	{
 		game->dirX = 1;
 		game->planeY = 0.66;
 	}
 	else
-    {
+	{
 		game->dirX = -1;
 		game->planeY = -0.66;
 	}
 }
 
-int			main(int argc, char **argv)
+int		main(int argc, char **argv)
 {
 	int		fd;
 	t_game	game;
@@ -176,13 +159,14 @@ int			main(int argc, char **argv)
 		ft_free_exit(&game);
 	if (!(line = ft_read_data(fd, &game.parse, line)))
 		ft_free_exit(&game);
-	if (!(ft_read_map(fd, &game.parse, line)))
+	if (!(ft_read_map(fd, &game.parse, line, 0)))
 		ft_free_exit(&game);
 	ft_pos_init(&game.parse, &game);
-	if (game.bmp == 1 && BMPwrite(&game))
+	if (game.bmp == 1 && bmp_write(&game))
 		ft_free_exit(&game);
 //	ft_printdata(&game.parse);
 	if (!(ft_create_window(&game.parse, &game)))
 		ft_free_exit(&game);
 	return (19);
 }
+//VIRER STDIO .H
