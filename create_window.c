@@ -6,7 +6,7 @@
 /*   By: ijacquet <ijacquet@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/03/11 15:14:42 by ijacquet          #+#    #+#             */
-/*   Updated: 2020/10/09 11:35:21 by ijacquet         ###   ########.fr       */
+/*   Updated: 2020/10/12 16:28:52 by ijacquet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,109 +20,6 @@ int		create_trgb(int t, t_parse *parse, int i)
 	else
 		return (t << 24 | parse->floor_red << 16 | parse->floor_green << 8
 		| parse->floor_blue);
-}
-
-int		move_fw(t_game *game, t_parse *parse)
-{
-	double	space_y;
-	double	space_x;
-	int		r;
-
-	space_y = (game->dirY >= 0) ? 0.2 : -0.2;
-	space_x = (game->dirX >= 0) ? 0.2 : -0.2;
-	if (parse->map[(int)(parse->spawn_point[0] - space_y)][(int)(space_x *
-		game->forback + parse->spawn_point[1] + (game->dirX * MV_SPD *
-		game->forback))] != '1' && parse->map[(int)(parse->spawn_point[0] +
-		space_y)][(int)(space_x * game->forback + parse->spawn_point[1] +
-		(game->dirX * MV_SPD * game->forback))] != '1')
-		parse->spawn_point[1] += game->dirX * game->forback * MV_SPD;
-	if (parse->map[(int)(space_y * game->forback + (parse->spawn_point[0] +
-		game->dirY * MV_SPD * game->forback))][(int)(parse->spawn_point[1] +
-		space_x)] != '1' && parse->map[(int)(space_y * game->forback +
-		(parse->spawn_point[0] + game->dirY * MV_SPD * game->forback))]
-		[(int)(parse->spawn_point[1] - space_x)] != '1')
-		parse->spawn_point[0] += game->dirY * MV_SPD * game->forback;
-	r = ft_sprite_dist(game, &game->parse);
-	return (r);
-}
-
-int		move_lr(t_game *game, t_parse *parse)
-{
-	double	space_y;
-	double	space_x;
-	int		r;
-
-	space_y = (game->dirY >= 0) ? 0.2 : -0.2;
-	space_x = (game->dirX >= 0) ? 0.2 : -0.2;
-	if (parse->map[(int)(parse->spawn_point[0] + space_y)][(int)
-		(parse->spawn_point[1] - game->leftright * game->dirY * MV_SPD - space_y
-		* game->leftright)] != '1' && parse->map[(int)(parse->spawn_point[0] -
-		space_y)][(int)(parse->spawn_point[1] - game->leftright * game->dirY *
-		MV_SPD - space_y * game->leftright)] != '1')
-		parse->spawn_point[1] -= game->leftright * game->dirY * MV_SPD;
-	if (parse->map[(int)(parse->spawn_point[0] + game->leftright * game->dirX *
-MV_SPD + space_x * game->leftright)][(int)(parse->spawn_point[1] + space_x)] !=
-'1' && parse->map[(int)(parse->spawn_point[0] + game->leftright * game->dirX *
-MV_SPD + space_x * game->leftright)][(int)(parse->spawn_point[1] - space_x)])
-		parse->spawn_point[0] += game->leftright * game->dirX * MV_SPD;
-	r = ft_sprite_dist(game, &game->parse);
-	return (r);
-}
-
-int		move_turn(t_game *game)
-{
-	double	old_dir_x;
-	double	old_plane_x;
-	double	turn_spd;
-
-	old_dir_x = game->dirX;
-	old_plane_x = game->planeX;
-	turn_spd = game->turn * MV_SPD / 2;
-	game->dirX = game->dirX * cos(turn_spd) - game->dirY * sin(turn_spd);
-	game->dirY = old_dir_x * sin(turn_spd) + game->dirY * cos(turn_spd);
-	game->planeX = game->planeX * cos(turn_spd) - game->planeY * sin(turn_spd);
-	game->planeY = old_plane_x * sin(turn_spd) + game->planeY * cos(turn_spd);
-	return (1);
-}
-
-int		key_pressed(int key, t_game *game)
-{
-	if (key == KEY_UP || key == KEY_W)
-		game->forback = 1;
-	else if (key == KEY_DOWN || key == KEY_S)
-		game->forback = -1;
-	else if (key == KEY_A)
-		game->leftright = -1;
-	else if (key == KEY_D)
-		game->leftright = 1;
-	else if (key == KEY_LEFT)
-		game->turn = -1;
-	else if (key == KEY_RIGHT)
-		game->turn = 1;
-	if (key == KEY_ESC)
-		ft_free_exit(game);
-	return (0);
-}
-
-int		key_released(int key, t_game *game)
-{
-	if (key == KEY_UP || key == KEY_W)
-		game->forback = 0;
-	else if (key == KEY_DOWN || key == KEY_S)
-		game->forback = 0;
-	else if (key == KEY_A)
-		game->leftright = 0;
-	else if (key == KEY_D)
-		game->leftright = 0;
-	else if (key == KEY_LEFT || key == KEY_RIGHT)
-		game->turn = 0;
-	return (1);
-}
-
-int		ft_endprog(t_game *game)
-{
-	ft_free_exit(game);
-	exit(EXIT_SUCCESS);
 }
 
 int		ft_loop(t_game *game)
@@ -150,8 +47,8 @@ void	*ft_image(t_parse *parse, t_game *game)
 	game->data[5].img = mlx_new_image(game->mlx, parse->x_reso, parse->y_reso);
 	game->data[5].addr = mlx_get_data_addr(game->data[5].img, &game->data[5].
 			bits_per_pixel, &game->data[5].line_length, &game->data[5].endian);
-	mlx_hook(game->window, EVENT_KEY_PRESS, 0, key_pressed, game);
-	mlx_hook(game->window, EVENT_KEY_RELEASE, 0, key_released, game);
+	mlx_hook(game->window, EVENT_KEY_PRESS, 0, ft_key_pressed, game);
+	mlx_hook(game->window, EVENT_KEY_RELEASE, 0, ft_key_released, game);
 	mlx_hook(game->window, 17, 0L, ft_endprog, game);
 	return (game->data[5].img);
 }

@@ -11,7 +11,12 @@ SRC	= 	create_window.c	\
 		parse_data2.c	\
 		parsing.c	\
 		raycasting.c \
-		bmp.c
+		bmp.c \
+		sprites.c \
+		utils.c \
+		screen.c \
+		keys.c \
+		movement.c
 
 OBJS	= 	$(SRC:.c=.o)
 

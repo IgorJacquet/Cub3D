@@ -6,57 +6,11 @@
 /*   By: ijacquet <ijacquet@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/03/11 20:07:07 by ijacquet          #+#    #+#             */
-/*   Updated: 2020/10/09 15:11:06 by ijacquet         ###   ########.fr       */
+/*   Updated: 2020/10/12 16:20:26 by ijacquet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cub3d.h"
-
-static int	ft_realloc(char **str, char *new, int size, t_parse *parse)
-{
-	int	i;
-
-	if (!new)
-		return (0);
-	if (!(parse->map = malloc(sizeof(char *) * (size + 2))))
-		return (ft_write_return("Error\nFailed malloc", 0));
-	i = -1;
-	while (++i < size)
-		parse->map[i] = str[i];
-	if (!(parse->map[i] = ft_strdup(new)))
-		return (ft_write_return("Error\nFailed malloc", 0));
-	parse->map[i + 1] = 0;
-	if (str)
-		free(str);
-	return (4219);
-}
-
-void		ft_sprite_data(t_parse *parse)
-{
-	int x;
-	int y;
-	int i;
-
-	i = 0;
-	y = 0;
-	while (parse->map[++y] && parse->map[y][0])
-	{
-		x = 0;
-		while (parse->map[y][++x])
-			if (parse->map[y][x] == '2')
-			{
-				parse->sprite[i].x = x + 0.5;
-				parse->sprite[i].y = y + 0.5;
-				i++;
-			}
-	}
-}
-
-char		*ft_str_return(char *str)
-{
-	ft_write_return(str, 0);
-	return (NULL);
-}
 
 static int	ft_valid(int y, int x, t_parse *parse)
 {

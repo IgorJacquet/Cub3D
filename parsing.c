@@ -6,7 +6,7 @@
 /*   By: ijacquet <ijacquet@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/02/20 12:51:00 by ijacquet          #+#    #+#             */
-/*   Updated: 2020/10/09 17:33:53 by ijacquet         ###   ########.fr       */
+/*   Updated: 2020/10/12 16:25:18 by ijacquet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,23 +61,6 @@ int		ft_struct_set(t_parse *parse, t_game *game)
 	return (4219);
 }
 
-void	ft_freeder(char **new_l, int i)
-{
-	int r;
-
-	r = 0;
-	i += i;
-	if (new_l)
-	{
-		while (new_l[r])
-		{
-			free(new_l[r]);
-			new_l[r++] = NULL;
-		}
-		free(new_l);
-	}
-}
-
 int		ft_checkfile(int argc, char **argv, t_game *game)
 {
 	char *str;
@@ -103,44 +86,31 @@ int		ft_checkfile(int argc, char **argv, t_game *game)
 	return (4219);
 }
 
-void	ft_printdata(t_parse *parse)
-{
-	int	y;
-	int	x;
-
-	y = -1;
-	x = 0;
-	while (parse->map[++y])
-		printf("%s\n", parse->map[y]);
-	printf("Resolution X : %d\nResolution Y :%d\nNorth texture path : %s\n South texture Path : %s\nEast texture path : %s\nWest texture path : %s\n Sprite texture path : %s\nFloor red : %d\nFloor green : %d\nFloor blue : %d\n Ceiling red : %d\nCeiling green : %d\nCeiling blue : %d\n", parse->x_reso, parse->y_reso, parse->no_p, parse->so_p, parse->ea_p, parse->we_p, parse->sprite_text, parse->floor_red, parse->floor_green, parse->floor_blue, parse->ceiling_red, parse->ceiling_green, parse->ceiling_blue);
-	printf("Spawn Y : %f\nSpawn X : %f\nSpawn orientation : %c\n", parse->spawn_point[0], parse->spawn_point[1], parse->spawn);
-}
-
 void	ft_pos_init(t_parse *parse, t_game *game)
 {
-	game->dirX = 0;
-	game->dirY = 0;
-	game->planeX = 0;
-	game->planeY = 0;
+	game->dirx = 0;
+	game->diry = 0;
+	game->planex = 0;
+	game->planey = 0;
 	if (parse->spawn == 'N')
 	{
-		game->dirY = -1;
-		game->planeX = 0.66;
+		game->diry = -1;
+		game->planex = 0.66;
 	}
 	else if (parse->spawn == 'S')
 	{
-		game->dirY = 1;
-		game->planeX = -0.66;
+		game->diry = 1;
+		game->planex = -0.66;
 	}
 	else if (parse->spawn == 'E')
 	{
-		game->dirX = 1;
-		game->planeY = 0.66;
+		game->dirx = 1;
+		game->planey = 0.66;
 	}
 	else
 	{
-		game->dirX = -1;
-		game->planeY = -0.66;
+		game->dirx = -1;
+		game->planey = -0.66;
 	}
 }
 
@@ -164,9 +134,7 @@ int		main(int argc, char **argv)
 	ft_pos_init(&game.parse, &game);
 	if (game.bmp == 1 && bmp_write(&game))
 		ft_free_exit(&game);
-//	ft_printdata(&game.parse);
 	if (!(ft_create_window(&game.parse, &game)))
 		ft_free_exit(&game);
 	return (19);
 }
-//VIRER STDIO .H
