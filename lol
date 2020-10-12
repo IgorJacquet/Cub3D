@@ -1,0 +1,14 @@
+Norme: ./keys.c
+Norme: ./bmp.c
+Norme: ./create_window.c
+Norme: ./movement.c
+Norme: ./parse_data2.c
+Norme: ./raycasting.c
+Norme: ./parsing.c
+Norme: ./screen.c
+Norme: ./parse_map.c
+Norme: ./utils.c
+Norme: ./keys.h
+Norme: ./parse_data.c
+Norme: ./cub3d.h
+Norme: ./sprites.c

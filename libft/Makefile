@@ -6,7 +6,7 @@
 #    By: ijacquet <ijacquet@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2019/10/11 16:16:03 by ijacquet          #+#    #+#              #
-#    Updated: 2020/09/28 17:25:36 by ijacquet         ###   ########.fr        #
+#    Updated: 2020/10/12 18:08:31 by ijacquet         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -34,8 +34,6 @@ OBJS		=	$(SRC:.c=.o)
 all:	$(NAME)
 
 $(NAME): $(OBJS) libft.h
-		make -C ft_printf all
-		cp ft_printf/*.a $(NAME)
 		ar rc $(NAME) $(OBJS)
 
 %.o:	%.c
@@ -43,10 +41,8 @@ $(NAME): $(OBJS) libft.h
 
 clean:
 	rm -f $(OBJS)
-	make -C ft_printf clean
 
 fclean: clean
 	rm -f $(NAME)
-	make -C ft_printf fclean
 
 re: fclean all

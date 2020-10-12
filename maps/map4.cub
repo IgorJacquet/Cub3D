@@ -1,19 +1,12 @@
-R 1120 960
+NO img/redbrick.xpm
+SO img/greystone.xpm
+EA img/bluestone.xpm
+WE img/barrel.xpm
+S img/barrel.xpm
+R 100 100
+F 123,123,123
+C 123,123,113
 
-NO ./img/redbrick.xpm
-SO ./img/bluestone.xpm
-EA ./img/colorstone.xpm
-WE ./img/greystone.xpm
-
-S ./img/ghost.xpm
-F 250,100,0
-C 225,30,0
-
-111111
-110N01111
-1111111
-121
-1111111111
-1100000001
-100000111
-111111111
+11111111111111
+1N2002002002001
+11111111111111
