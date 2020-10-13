@@ -6,7 +6,7 @@
 /*   By: ijacquet <ijacquet@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/03/11 20:12:03 by ijacquet          #+#    #+#             */
-/*   Updated: 2020/10/08 14:54:49 by ijacquet         ###   ########.fr       */
+/*   Updated: 2020/10/13 15:10:58 by ijacquet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,11 +23,11 @@ int		ft_resol_sprite(char **new_l, t_parse *parse)
 	if (new_l[0] && new_l[0][0] == 'S' && !new_l[0][1])
 	{
 		if (parse->check[4] == '1')
-			return (ft_write_return("Error\nDouble sprite texture", 0));
+			return (ft_write_return("Error\nDouble sprite texture\n", 0));
+		if (!new_l[1] || new_l[2])
+			return (ft_write_return("Error\nWrong number of sprite args\n", 0));
 		if (!(parse->sprite_text = ft_strdup(new_l[1])))
-			return (ft_write_return("Error\nFailed Malloc", 0));
-		if (new_l[2] || !new_l[1])
-			return (ft_write_return("Error\nWrong number of sprite args", 0));
+			return (ft_write_return("Error\nFailed Malloc\n", 0));
 		parse->check[4] = '1';
 	}
 	else if (new_l[0] && new_l[0][0] == 'R' && !new_l[0][1])
@@ -43,6 +43,25 @@ int		ft_resol_sprite(char **new_l, t_parse *parse)
 	return (4219);
 }
 
+int		ft_color_check(t_parse *parse, int i, int j)
+{
+	if (j == 0)
+	{
+		if (parse->ceiling_green < 0 || parse->ceiling_green > 255 ||
+					parse->ceiling_blue < 0 || parse->ceiling_blue > 255 ||
+					parse->ceiling_red < 0 || parse->ceiling_red > 255)
+			return (ft_write_return("Error\nWrong ceiling RGB\n", 0));
+	}
+	else if (j == 1)
+	{
+		if (parse->floor_green < 0 || parse->floor_green > 255 ||
+				parse->floor_blue < 0 || parse->floor_blue > 255 ||
+				parse->floor_red < 0 || parse->floor_red > 255)
+			return (ft_write_return("Error\nWrong floor RGB\n", 0));
+	}
+	return (i);
+}
+
 int		ft_parser(char **new_l, t_parse *parse)
 {
 	int i;
@@ -52,23 +71,17 @@ int		ft_parser(char **new_l, t_parse *parse)
 	else if ((i = ft_cardinal_x(new_l, parse)) > 0)
 		return (i);
 	else if ((i = ft_ceiling(new_l, parse, -1)) > 0)
-	{
-		if (parse->ceiling_green < 0 || parse->ceiling_green > 255 ||
-				parse->ceiling_blue < 0 || parse->ceiling_blue > 255 ||
-				parse->ceiling_red < 0 || parse->ceiling_red > 255)
-			return (ft_write_return("Error\nWrong ceiling RGB", 0));
-		return (i);
-	}
+		return (ft_color_check(parse, i, 0));
 	else if ((i = ft_floor(new_l, parse, -1)) > 0)
-	{
-		if (parse->floor_green < 0 || parse->floor_green > 255 ||
-				parse->floor_blue < 0 || parse->floor_blue > 255 ||
-				parse->floor_red < 0 || parse->floor_red > 255)
-			return (ft_write_return("Error\nWrong floor RGB", 0));
-		return (i);
-	}
+		return (ft_color_check(parse, i, 1));
 	else if ((i = ft_resol_sprite(new_l, parse)) > 0)
 		return (i);
+	else if (new_l[0] && (ft_strncmp(new_l[0], "NO", 3) &&
+	ft_strncmp(new_l[0], "SO", 3) && ft_strncmp(new_l[0], "EA", 3) &&
+	ft_strncmp(new_l[0], "WE", 3) && ft_strncmp(new_l[0], "R", 2) &&
+	ft_strncmp(new_l[0], "F", 2) && ft_strncmp(new_l[0], "C", 2) &&
+	ft_strncmp(new_l[0], "S", 2)))
+		return (ft_write_return("Error\nInvalid data\n", 0));
 	return (i);
 }
 
@@ -84,7 +97,7 @@ char	*ft_read_data(int fd, t_parse *parse, char *line)
 		if (new_l[0] && ft_parser(new_l, parse) != 4219)
 		{
 			ft_freeder(new_l, 0);
-			return (ft_str_return("Error\nInvalid data\n"));
+			return (NULL);
 		}
 		ft_freeder(new_l, 4219);
 		if (ft_strlen(parse->check) == 8)
@@ -94,7 +107,7 @@ char	*ft_read_data(int fd, t_parse *parse, char *line)
 	}
 	if (r == 0)
 	{
-		ft_write_return("Error\nmissing data", 0);
+		ft_write_return("Error\nmissing data\n", 0);
 		return (NULL);
 	}
 	return (line);

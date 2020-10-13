@@ -6,7 +6,7 @@
 /*   By: ijacquet <ijacquet@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/02/19 20:02:30 by ijacquet          #+#    #+#             */
-/*   Updated: 2020/10/12 18:10:02 by ijacquet         ###   ########.fr       */
+/*   Updated: 2020/10/13 13:24:53 by ijacquet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@
 # include "minilibx/mlx.h"
 # include "keys.h"
 
-# define MV_SPD 0.01
+# define MV_SPD 0.05
 
 typedef struct	s_screen
 {
