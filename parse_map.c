@@ -6,7 +6,7 @@
 /*   By: ijacquet <ijacquet@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/03/11 20:07:07 by ijacquet          #+#    #+#             */
-/*   Updated: 2020/10/12 16:20:26 by ijacquet         ###   ########.fr       */
+/*   Updated: 2020/10/14 14:55:43 by ijacquet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,11 +18,11 @@ static int	ft_valid(int y, int x, t_parse *parse)
 		parse->map[y][x] != 49 && parse->map[y][x] != 50 &&
 		parse->map[y][x] != 69 && parse->map[y][x] != 78 &&
 		parse->map[y][x] != 87 && parse->map[y][x] != 83)
-		return (ft_write_return("Error\nInvalid map", 0));
+		return (ft_write_return("Error\nInvalid map\n", 0));
 	if (x == 0)
 	{
 		if (parse->map[y][x] != '1' && parse->map[y][x] != ' ')
-			return (ft_write_return("Error\nInvalid map", 0));
+			return (ft_write_return("Error\nInvalid map\n", 0));
 	}
 	else if (parse->map[y][x] == '0' || parse->map[y][x] == 'N' ||
 			parse->map[y][x] == 'S' || parse->map[y][x] == 'E' ||
@@ -30,11 +30,11 @@ static int	ft_valid(int y, int x, t_parse *parse)
 	{
 		if ((x + 1) > (int)ft_strlen(parse->map[y - 1]) || \
 			(x + 1) > (int)ft_strlen(parse->map[y + 1]))
-			return (ft_write_return("Error\nInvalid map", 0));
+			return (ft_write_return("Error\nInvalid map\n", 0));
 		else if (parse->map[y][x - 1] == ' ' || parse->map[y][x + 1] == ' ' ||
 					parse->map[y - 1][x] == 32 || parse->map[y + 1][x] == 32 ||
 					parse->map[y][x + 1] == 0)
-			return (ft_write_return("Error\nInvalid map", 0));
+			return (ft_write_return("Error\nInvalid map\n", 0));
 	}
 	return (4219);
 }
@@ -42,11 +42,11 @@ static int	ft_valid(int y, int x, t_parse *parse)
 static int	ft_last_line_check(t_parse *parse, int x, int y)
 {
 	if (!(parse->sprite = malloc(sizeof(t_sprite) * parse->sprite_count)))
-		return (ft_write_return("Error\nFailed malloc", 0));
+		return (ft_write_return("Error\nFailed malloc\n", 0));
 	while (parse->map[y][x])
 	{
 		if (parse->map[y][x] != '1' && parse->map[y][x] != ' ')
-			return (ft_write_return("Error\nInvalid map", 0));
+			return (ft_write_return("Error\nInvalid map\n", 0));
 		x++;
 	}
 	ft_sprite_data(parse);
@@ -57,7 +57,7 @@ static int	ft_map_parser(t_parse *parse, int size, int x, int y)
 {
 	while (parse->map[0][++x])
 		if (parse->map[0][x] != '1' && parse->map[0][x] != ' ')
-			return (ft_write_return("Error\nInvalid map", 0));
+			return (ft_write_return("Error\nInvalid map\n", 0));
 	x = 0;
 	while (parse->map[++y][x] && y < size - 1)
 	{
@@ -85,13 +85,13 @@ static int	ft_map_parser(t_parse *parse, int size, int x, int y)
 char		*ft_map_gnl_check(t_parse *parse, int size, int r)
 {
 	if (r < 0)
-		return (ft_str_return("Error\nGet next line failed"));
+		return (ft_str_return("Error\nGet next line failed\n"));
 	if (!parse->map[0][0])
-		return (ft_str_return("Error\nNo map"));
+		return (ft_str_return("Error\nNo map\n"));
 	if (!(ft_map_parser(parse, size + 1, -1, 0)))
 		return (NULL);
 	if (parse->spawn == 0)
-		return (ft_str_return("Error\nNo spawn"));
+		return (ft_str_return("Error\nNo spawn\n"));
 	return ("ok");
 }
 
@@ -110,12 +110,12 @@ char		*ft_read_map(int fd, t_parse *parse, char *line, int count)
 			if (!(ft_realloc(parse->map, line, ++size, parse)))
 				return (NULL);
 			if (count == 2 && line[0])
-				return (ft_str_return("Error\nInvalid map"));
+				return (ft_str_return("Error\nInvalid map\n"));
 			if (count == 0)
 				count = 1;
 		}
 		if (size != 0 && line[0] != 0 && parse->map[size - 1][0] == 0)
-			return (ft_str_return("Error\nInvalid map"));
+			return (ft_str_return("Error\nInvalid map\n"));
 		free(line);
 		if (r == 0)
 			break ;

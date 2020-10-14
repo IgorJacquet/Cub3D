@@ -6,7 +6,7 @@
 /*   By: ijacquet <ijacquet@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/12 16:21:29 by ijacquet          #+#    #+#             */
-/*   Updated: 2020/10/12 16:22:23 by ijacquet         ###   ########.fr       */
+/*   Updated: 2020/10/14 12:36:38 by ijacquet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,17 +20,17 @@ int		move_fw(t_game *game, t_parse *parse)
 
 	space_y = (game->diry >= 0) ? 0.2 : -0.2;
 	space_x = (game->dirx >= 0) ? 0.2 : -0.2;
-	if (parse->map[(int)(parse->spawn_point[0] - space_y)][(int)(space_x *
+	if ((parse->map[(int)(parse->spawn_point[0] - space_y)][(int)(space_x *
 		game->forback + parse->spawn_point[1] + (game->dirx * MV_SPD *
 		game->forback))] != '1' && parse->map[(int)(parse->spawn_point[0] +
 		space_y)][(int)(space_x * game->forback + parse->spawn_point[1] +
-		(game->dirx * MV_SPD * game->forback))] != '1')
+		(game->dirx * MV_SPD * game->forback))] != '1'))
 		parse->spawn_point[1] += game->dirx * game->forback * MV_SPD;
-	if (parse->map[(int)(space_y * game->forback + (parse->spawn_point[0] +
+	if ((parse->map[(int)(space_y * game->forback + (parse->spawn_point[0] +
 		game->diry * MV_SPD * game->forback))][(int)(parse->spawn_point[1] +
 		space_x)] != '1' && parse->map[(int)(space_y * game->forback +
 		(parse->spawn_point[0] + game->diry * MV_SPD * game->forback))]
-		[(int)(parse->spawn_point[1] - space_x)] != '1')
+		[(int)(parse->spawn_point[1] - space_x)] != '1'))
 		parse->spawn_point[0] += game->diry * MV_SPD * game->forback;
 	r = ft_sprite_dist(game, &game->parse);
 	return (r);

@@ -6,7 +6,7 @@
 /*   By: ijacquet <ijacquet@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/03/11 15:14:42 by ijacquet          #+#    #+#             */
-/*   Updated: 2020/10/12 16:28:52 by ijacquet         ###   ########.fr       */
+/*   Updated: 2020/10/14 14:53:16 by ijacquet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,19 +60,19 @@ int		ft_text_set(t_game *game, int i, char *path)
 	r = 1;
 	if (!(game->data[i].img = mlx_xpm_file_to_image(game->mlx, path,
 				&(game->data[i].width), &(game->data[i].height))))
-		return (ft_write_return("Error\nWrong texture/sprite path", 0));
+		return (ft_write_return("Error\nWrong texture/sprite path\n", 0));
 	game->data[i].addr = mlx_get_data_addr(game->data[i].img,
 				&(game->data[i].bits_per_pixel), &(game->data[i].line_length),
 				&(game->data[i].endian));
-	if ((game->data[i].height != 64 || game->data[i].width != 64) && i != 4)
-		return (ft_write_return("Error\nWrong XPM dimension(s)", 0));
+	if ((game->data[i].height != game->data[i].width) && i != 4)
+		return (ft_write_return("Error\nWrong XPM dimension(s)\n", 0));
 	return (r);
 }
 
 int		ft_create_window(t_parse *parse, t_game *game)
 {
 	if (!(game->mlx = mlx_init()))
-		return (ft_write_return("Error\nMLX init failure", 0));
+		return (ft_write_return("Error\nMLX init failure\n", 0));
 	game->window = mlx_new_window(game->mlx, parse->x_reso, parse->y_reso,
 	"Nicollage");
 	if (!(game->sp_order = malloc(sizeof(int *) * (parse->sprite_count))))

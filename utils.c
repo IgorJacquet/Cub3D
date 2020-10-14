@@ -6,7 +6,7 @@
 /*   By: ijacquet <ijacquet@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/12 16:09:32 by ijacquet          #+#    #+#             */
-/*   Updated: 2020/10/12 16:22:45 by ijacquet         ###   ########.fr       */
+/*   Updated: 2020/10/14 15:09:29 by ijacquet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,12 +19,12 @@ int		ft_realloc(char **str, char *new, int size, t_parse *parse)
 	if (!new)
 		return (0);
 	if (!(parse->map = malloc(sizeof(char *) * (size + 2))))
-		return (ft_write_return("Error\nFailed malloc", 0));
+		return (ft_write_return("Error\nFailed malloc\n", 0));
 	i = -1;
 	while (++i < size)
 		parse->map[i] = str[i];
 	if (!(parse->map[i] = ft_strdup(new)))
-		return (ft_write_return("Error\nFailed malloc", 0));
+		return (ft_write_return("Error\nFailed malloc\n", 0));
 	parse->map[i + 1] = 0;
 	if (str)
 		free(str);

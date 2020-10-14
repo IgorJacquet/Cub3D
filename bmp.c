@@ -6,7 +6,7 @@
 /*   By: ijacquet <ijacquet@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/06 13:29:39 by ijacquet          #+#    #+#             */
-/*   Updated: 2020/10/07 12:20:15 by ijacquet         ###   ########.fr       */
+/*   Updated: 2020/10/14 14:54:03 by ijacquet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,7 +69,7 @@ static int	write_data(int fd, t_game *game, int pad)
 int			ft_set_trucs(t_game *game, t_parse *parse)
 {
 	if (!(game->mlx = mlx_init()))
-		return (ft_write_return("Error\nMLX init failure", 0));
+		return (ft_write_return("Error\nMLX init failure\n", 0));
 	if (!(game->sp_order = malloc(sizeof(int *) * (parse->sprite_count))))
 		return (0);
 	if (!((ft_text_set(game, 0, parse->we_p) &&
@@ -98,18 +98,18 @@ int			bmp_write(t_game *game)
 							(int)game->parse.y_reso);
 	if ((fd = open("screen.bmp", O_WRONLY | O_CREAT | O_TRUNC, S_IRWXU)) == -1)
 	{
-		ft_write_return("Error\nOpen failed", 0);
+		ft_write_return("Error\nOpen failed\n", 0);
 		ft_free_exit(game);
 	}
 	bmp_make(filesize, game, fd);
 	if (!(ft_set_trucs(game, &game->parse)))
 	{
-		ft_write_return("Error\nOpen failed", 0);
+		ft_write_return("Error\nOpen failed\n", 0);
 		ft_free_exit(game);
 	}
 	if (!(write_data(fd, game, padding)))
 	{
-		ft_write_return("Error\nOpen failed", 0);
+		ft_write_return("Error\nOpen failed\n", 0);
 		ft_free_exit(game);
 	}
 	close(fd);

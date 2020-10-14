@@ -6,7 +6,7 @@
 /*   By: ijacquet <ijacquet@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/02/20 12:51:00 by ijacquet          #+#    #+#             */
-/*   Updated: 2020/10/12 16:25:18 by ijacquet         ###   ########.fr       */
+/*   Updated: 2020/10/14 14:59:25 by ijacquet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -124,7 +124,7 @@ int		main(int argc, char **argv)
 	if (ft_checkfile(argc, argv, &game) != 4219)
 		return (21);
 	if ((fd = open(argv[1], O_RDONLY)) < 0)
-		return (ft_write_return("Error\nOpen file failed", 21));
+		return (ft_write_return("Error\nOpen file failed\n", 23));
 	if (ft_struct_set(&game.parse, &game) != 4219)
 		ft_free_exit(&game);
 	if (!(line = ft_read_data(fd, &game.parse, line)))
