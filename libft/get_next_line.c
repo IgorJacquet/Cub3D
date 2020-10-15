@@ -6,13 +6,13 @@
 /*   By: ijacquet <ijacquet@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/12 12:13:14 by ijacquet          #+#    #+#             */
-/*   Updated: 2020/09/28 17:56:52 by ijacquet         ###   ########.fr       */
+/*   Updated: 2020/10/15 12:14:00 by ijacquet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-static int		endl_checker(char *line)
+static int	endl_checker(char *line)
 {
 	int	i;
 
@@ -23,7 +23,7 @@ static int		endl_checker(char *line)
 	return (0);
 }
 
-static int		ft_reader(char (*line)[BUFFER_SIZE + 1], char *buf, int fd)
+static int	ft_reader(char (*line)[BUFFER_SIZE + 1], char *buf, int fd)
 {
 	int	len;
 	int	i;
@@ -67,7 +67,7 @@ static int	line_filler(char **line, char (*rest)[BUFFER_SIZE + 1])
 	return (1);
 }
 
-int		get_next_line(int fd, char **line)
+int			get_next_line(int fd, char **line)
 {
 	static char	rest[OPEN_MAX][BUFFER_SIZE + 1];
 	char		buf[BUFFER_SIZE + 1];
@@ -84,7 +84,7 @@ int		get_next_line(int fd, char **line)
 			return (-1);
 		r = ft_reader(&rest[fd], buf, fd);
 		if (r < 0)
-			return(ft_freeturn(line, -1));
+			return (ft_freeturn(line, -1));
 		else if (r == 0)
 			return (r);
 	}
